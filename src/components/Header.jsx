@@ -11,8 +11,10 @@ export default function Header() {
         }
     }
   return (
+    <div className='shadow-sm bg-white border-b sticky top-0 z-50'>
+
     <header className='flex justify-between items-center px-3 
-    max-w-6xl mx-auto shadow-sm bg-white border-b sticky top-0 z-50'>
+    max-w-6xl mx-auto '>
         <div>
             <img src={logo} alt="embtec konzultz logo" className='h-7 cursor-pointer' onClick={()=>navigate("/")}/>
         </div>
@@ -29,5 +31,6 @@ export default function Header() {
             </ul>
         </div>
     </header>
+    </div>
   )
 }
