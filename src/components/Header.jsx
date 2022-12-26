@@ -19,7 +19,7 @@ export default function Header() {
             <img src={logo} alt="embtec konzultz logo" className='h-7 cursor-pointer' onClick={()=>navigate("/")}/>
         </div>
         <div>
-            <ul className='flex space-x-10'>
+            <ul className='flex space-x-10 text-stone-700'>
                 <li className={`cursor-pointer py-3 text-sm font-sm font-semibold text-grey-400 border-b-[3px] 
                 border-b-transparent ${pathMathRoute("/") && "text-black border-b-red-500"}`} onClick={()=>navigate("/")}>Home</li>
 
