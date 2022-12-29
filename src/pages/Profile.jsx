@@ -5,6 +5,8 @@ import { toast } from 'react-toastify'
 import { updateDoc } from 'firebase/firestore'
 import {db} from '../firebase'
 import { doc } from 'firebase/firestore'
+import { HiComputerDesktop } from "react-icons/hi2"
+import { Link } from 'react-router-dom'
 
 export default function Profile() {
   const auth = getAuth()
@@ -82,6 +84,15 @@ export default function Profile() {
             </div>
              
           </form>
+
+          <button type='submit' className='w-full bg-blue-600 text-white uppercase px-7 py-3 text-sm 
+          font-medium rounded shadow-md hover:bg-blue-700 transition duration-150 ease-in-out hover:shadow-lg 
+          active:bg-blue-800'>
+            <Link to="/create-listing" className='flex justify-center items-center '>
+            <HiComputerDesktop className='mr-2 text-3xl rounded-full p-1 border-2'/>
+            Add or remove a course
+            </Link>
+          </button>
         </div>
       </section>
     </>
