@@ -1,20 +1,61 @@
 import React, { useState } from 'react'
+import { toast } from 'react-toastify'
+import Spinner from '../components/Spinner'
 
 export default function CreateListing() {
+    const [geolocationEnabled, setGeolocationEnabled] = useState(true)
+    const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
         type: 'virtual',
         name:"",
         durations: 2,
         amount: 30,
-        single: false,
-        specialization: false,
-        kids: false,
-        adults: false,
+        enroll: false,
+        person: false,
         description:"",
+        latitude: 0,
+        longitude: 0,
+        images: {}, 
     })
-    const {type, name, durations, amount, single, specialization, kids, adults, description} = formData
-    function onChange(){
+    const {type, name, durations, amount, person, description, enroll, latitude, longitude, images} = formData
+    function onChange(e){
+        let boolean = null
+        if(e.target.value === "true"){
+            boolean = true
+        }
+        if(e.target.value === "false"){
+            boolean = false
+        }
+        //files
+        if(e.target.files){
+            setFormData((prevState) =>({
+                ...prevState,
+                images: e.target.files
+            }))
+        }
+            // text/boolean/number
+        if(!e.target.files){
+            setFormData((prevState) =>({
+                ...prevState,
+                [e.target.id]: boolean ?? e.target.value,
+                }))   
+        }
+    }
 
+    function onSubmit(e){
+        e.preventDefault()
+        setLoading(true)
+    }
+    if(images.length > 6){
+        setLoading(false)
+        toast.error("maximum of 6 images is allowed")
+        return
+    }
+    let geolocation = {}
+    let location
+    
+    if(loading){
+        return <Spinner />
     }
 
   return (
@@ -56,50 +97,68 @@ export default function CreateListing() {
                 </div>
                 <div>
                     <p className='text-lg font-semibold'>amount</p>
-                    <input type="number" name='duration' id={amount} onChange={onChange} min="1" max={6} required
+                    <input type="number" name='duration' id={amount} onChange={onChange} min="10000" max={150000} required
                     className='w-full px-4 text-xl py-2 text-gray-300 bg-white border border-gray-700 rounded transition duration-150 ease-in-out 
                     focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center '/>
 
                 </div>
             </div>
 
-            <p className='text-lg mt-6 font-semibold'>kind of registration</p>
+            <p className='text-lg mt-6 font-semibold'>kind of enrollment</p>
             <div className='flex'>
-                <button type='button' id='single' value={true}
+                <button type='button' id='enroll' value={true}
                 onClick={onChange}
                 className={`mr-3 uppercase px-7 py-3 font-medium text-sm shadow-md
                  rounded hover:shadow-lg focus:shadow-lg active:shadow-lg
                  transition duration-150 ease-in-out w-full ${
-                    single ? "bg-white text-black" : "bg-slate-600 text-white"
+                    !enroll ? "bg-white text-black" : "bg-slate-600 text-white"
                  }`}>single</button>
 
-                <button type='button' id='specialization' value={true}
+                <button type='button' id='enroll' value={false}
                 onClick={onChange}
                 className={`uppercase px-7 py-3 font-medium text-sm shadow-md
                  rounded hover:shadow-lg focus:shadow-lg active:shadow-lg
                  transition duration-150 ease-in-out w-full ${
-                    !specialization ? "bg-white text-black" : "bg-slate-600 text-white"
+                    enroll ? "bg-white text-black" : "bg-slate-600 text-white"
                  }`}>specialization</button>
-             </div>    
+            </div>
 
-            <p className='text-lg mt-6 font-semibold'>Kids/ Adults</p>
+            <p className='text-lg mt-6 font-semibold'>who is the course for</p>
             <div className='flex'>
-                <button type='button' id='kids' value={true}
+                <button type='button' id='person' value={false}
                 onClick={onChange}
                 className={`mr-3 uppercase px-7 py-3 font-medium text-sm shadow-md
                  rounded hover:shadow-lg focus:shadow-lg active:shadow-lg
                  transition duration-150 ease-in-out w-full ${
-                    !kids ? "bg-white text-black" : "bg-slate-600 text-white"
+                    person ? "bg-white text-black" : "bg-slate-600 text-white"
                  }`}>kids</button>
 
-                <button type='button' id='adults' value={true}
+                <button type='button' id='person' value={true}
                 onClick={onChange}
                 className={`uppercase px-7 py-3 font-medium text-sm shadow-md
                  rounded hover:shadow-lg focus:shadow-lg active:shadow-lg
                  transition duration-150 ease-in-out w-full ${
-                    adults ? "bg-white text-black" : "bg-slate-600 text-white"
+                    !person ? "bg-white text-black" : "bg-slate-600 text-white"
                  }`}>adults</button>
             </div>
+
+            { !geolocationEnabled && (
+                <div className='flex space-x-6 justify-start'>
+                    <div>
+                        <p className='text-lg font-semibold '>Latitude</p>
+                        <input type="text" name="latitude" id="latitude" value={latitude}
+                        onchange={onChange} required  
+                        className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' />
+                    </div>
+                    <div>
+                        <p className='text-lg font-semibold '>Longitude</p>
+                        <input type="text" name="latitude" id="latitude" value={latitude}
+                        onchange={onChange} required  
+                        className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' />
+                    </div>
+                </div>
+            )}     
+
             <p className='text-lg mt-6 font-semibold'>Description </p>
             <textarea type="text" name="description" id="description" value={description}  onChange={onChange}
             placeholder="course name" required 
