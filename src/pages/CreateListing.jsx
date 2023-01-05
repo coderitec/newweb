@@ -1,8 +1,13 @@
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import Spinner from '../components/Spinner'
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
+import { getAuth } from 'firebase/auth'
+import {v4 as uuidv4} from "uuid"
+
 
 export default function CreateListing() {
+    const auth = getAuth()
     const [geolocationEnabled, setGeolocationEnabled] = useState(true)
     const [loading, setLoading] = useState(false)
     const [formData, setFormData] = useState({
@@ -42,18 +47,64 @@ export default function CreateListing() {
         }
     }
 
-    function onSubmit(e){
+
+    async function onSubmit(e){
         e.preventDefault()
         setLoading(true)
+
+        async function storageImage(image){
+            return new Promise((resolve, reject)=>{
+                const  storage  = getStorage()
+                const filename = `${auth.currentUser.uid}-${image.name}-${uuidv4()}`
+                const storageRef = ref(storage, filename)
+                const uploadTask = uploadBytesResumable(storageRef, image)
+
+                uploadTask.on('state_changed', 
+                    (snapshot) => {
+                        // Observe state change events such as progress, pause, and resume
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        switch (snapshot.state) {
+                        case 'paused':
+                            console.log('Upload is paused')
+                            break;
+                        case 'running':
+                            console.log('Upload is running')
+                            break;
+                        default:
+                            console.log("All seems fine")   
+                        }
+                    }, 
+                    (error) => {
+                        // Handle unsuccessful uploads
+                        reject(error)
+                    }, 
+                    () => {
+                        // Handle successful uploads on complete
+                        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+                        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+                        resolve( downloadURL);
+                        });
+                    }
+                    );
+                                })
+        }
+
+        const imgUrls = await Promise.all(
+            [...images].map((image)=>storageImage(image))).catch((error)=>{
+                setLoading(false)
+                toast.error("images not uploaded")
+                return
+            }
+        )
+        console.log(imgUrls)
     }
     if(images.length > 6){
         setLoading(false)
         toast.error("maximum of 6 images is allowed")
         return
     }
-    let geolocation = {}
-    let location
-    
     if(loading){
         return <Spinner />
     }
@@ -62,7 +113,7 @@ export default function CreateListing() {
     <main className='max-w-md px-2 mx-auto'>
         <h1 className='text-3xl text-center mt-6 font-bold uppercase'>create a course</h1>
 
-        <form>
+        <form onSubmit={onSubmit}>
             <p className='text-lg mt-6 font-semibold'>onsite / virtual</p>
             <div className='flex'>
                 <button type='button' id='type' value='onsite'
@@ -146,14 +197,14 @@ export default function CreateListing() {
                 <div className='flex space-x-6 justify-start'>
                     <div>
                         <p className='text-lg font-semibold '>Latitude</p>
-                        <input type="text" name="latitude" id="latitude" value={latitude}
-                        onchange={onChange} required  
+                        <input type="number" name="latitude" id="latitude" value={latitude}
+                        onChange={onChange} min={-90} max={90} required  
                         className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' />
                     </div>
                     <div>
                         <p className='text-lg font-semibold '>Longitude</p>
-                        <input type="text" name="latitude" id="latitude" value={latitude}
-                        onchange={onChange} required  
+                        <input type="number" name="longitude" id="longitude" value={longitude}
+                        onChange={onChange} min={-180} max={180} required  
                         className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded transition duration-150 ease-in-out focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center' />
                     </div>
                 </div>
@@ -161,7 +212,7 @@ export default function CreateListing() {
 
             <p className='text-lg mt-6 font-semibold'>Description </p>
             <textarea type="text" name="description" id="description" value={description}  onChange={onChange}
-            placeholder="course name" required 
+            placeholder="course description" required 
             className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded
             transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6'/>
 
