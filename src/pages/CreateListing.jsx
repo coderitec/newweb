@@ -4,9 +4,12 @@ import Spinner from '../components/Spinner'
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage"
 import { getAuth } from 'firebase/auth'
 import {v4 as uuidv4} from "uuid"
-
+import {addDoc, collection, serverTimestamp} from "firebase/firestore"
+import {db} from "../firebase"
+import { useNavigate } from 'react-router-dom'
 
 export default function CreateListing() {
+    const navigate = useNavigate()
     const auth = getAuth()
     const [geolocationEnabled, setGeolocationEnabled] = useState(true)
     const [loading, setLoading] = useState(false)
@@ -99,6 +102,19 @@ export default function CreateListing() {
             }
         )
         console.log(imgUrls)
+        const formDataCopy = {
+            ...formData,
+            imgUrls,
+            timestamp: serverTimestamp(),
+        }
+        delete formDataCopy.images
+        delete formDataCopy.latitude
+        delete formDataCopy.longitude
+        !formDataCopy.type && delete formDataCopy.amount
+        const docRef =  await addDoc(collection(db, "listings"), formDataCopy)
+        setLoading(false)
+        toast.success("Course added")
+        navigate(`/category/${formDataCopy.type}/${docRef.id}`)
     }
     if(images.length > 6){
         setLoading(false)
@@ -134,7 +150,7 @@ export default function CreateListing() {
             </div>
             <p className='text-lg mt-6 font-semibold'>Name </p>
             <input type="text" name="name" id="name" value={name}  onChange={onChange}
-            placeholder="course name" maxLength={40} minLength={10} required 
+            placeholder="course name" maxLength={40} minLength={5} required 
             className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded
             transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6'/>
 
