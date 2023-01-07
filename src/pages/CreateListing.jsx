@@ -106,6 +106,8 @@ export default function CreateListing() {
             ...formData,
             imgUrls,
             timestamp: serverTimestamp(),
+            userRef:auth.currentUser.uid,
+
         }
         delete formDataCopy.images
         delete formDataCopy.latitude
@@ -157,7 +159,7 @@ export default function CreateListing() {
             <div className='flex space-x-6 mb-6'>
                 <div>
                     <p className='text-lg font-semibold'>duration</p>
-                    <input type="number" name='duration' id={durations} onChange={onChange} min="1" max={6} required
+                    <input type="number" name='duration' id={durations} onChange={onChange} min="2" max={24} required
                     className='w-full px-4 text-xl py-2 text-gray-300 bg-white border border-gray-700 rounded transition duration-150 ease-in-out 
                     focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center '/>
 
