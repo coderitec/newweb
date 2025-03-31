@@ -17,7 +17,7 @@ export default function CreateListing() {
         type: 'virtual',
         name:"",
         durations: 2,
-        amount: 30,
+        amount: "",
         enroll: false,
         person: false,
         description:"",
@@ -152,21 +152,21 @@ export default function CreateListing() {
             </div>
             <p className='text-lg mt-6 font-semibold'>Name </p>
             <input type="text" name="name" id="name" value={name}  onChange={onChange}
-            placeholder="course name" maxLength={40} minLength={5} required 
+            placeholder="course name" maxLength="40" minLength="5" required 
             className='w-full px-4 py-2 text-xl text-gray-700 bg-white border border-gray-300 rounded
             transition duration-150 ease-in-out focus:text-gray-700 focus:bg-white focus:border-slate-600 mb-6'/>
 
             <div className='flex space-x-6 mb-6'>
                 <div>
                     <p className='text-lg font-semibold'>duration</p>
-                    <input type="number" name='duration' id={durations} onChange={onChange} min="2" max={24} required
+                    <input type="number" name='duration' id={durations} onChange={onChange} min="2" max="24" required
                     className='w-full px-4 text-xl py-2 text-gray-300 bg-white border border-gray-700 rounded transition duration-150 ease-in-out 
                     focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center '/>
 
                 </div>
                 <div>
                     <p className='text-lg font-semibold'>amount</p>
-                    <input type="number" name='duration' id={amount} onChange={onChange} min="10000" max={150000} required
+                    <input type="number" name='duration' id={amount} onChange={onChange} min="10000" max="150000" required
                     className='w-full px-4 text-xl py-2 text-gray-300 bg-white border border-gray-700 rounded transition duration-150 ease-in-out 
                     focus:bg-white focus:text-gray-700 focus:border-slate-600 text-center '/>
 

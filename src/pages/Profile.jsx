@@ -122,7 +122,7 @@ export default function Profile() {
         {!loading && listings.length > 0 &&(
           <>
            <h2 className='text-2xl text-center font-semibold'>My registered courses</h2>
-           <ul>
+           <ul className='grid grid-cols-3'>
             {listings.map((listing)=>(
               <ListingItem 
               key={listing.id} 
